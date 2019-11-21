@@ -160,7 +160,7 @@ RectI MemeField::GetRect() const
 
 void MemeField::OnRevealClick(const Vei2 & screenPos)
 {
-	if (!isFucked)
+	if (!isFucked && !GameIsWon())
 	{
 		const Vei2 gridPos = ScreenToGrid(screenPos);
 		assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
@@ -171,6 +171,7 @@ void MemeField::OnRevealClick(const Vei2 & screenPos)
 			if (tile.HasMeme())
 			{
 				isFucked = true;
+				sndLoose.Play();
 			}
 		}
 	}
@@ -178,7 +179,7 @@ void MemeField::OnRevealClick(const Vei2 & screenPos)
 
 void MemeField::OnFlagClick(const Vei2 & screenPos)
 {
-	if (!isFucked)
+	if (!isFucked && !GameIsWon())
 	{
 		const Vei2 gridPos = ScreenToGrid(screenPos);
 		assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
@@ -188,6 +189,22 @@ void MemeField::OnFlagClick(const Vei2 & screenPos)
 			tile.ToggleFlag();
 		}
 	}
+}
+
+bool MemeField::GameIsWon() const
+{
+	for (const Tile& t : field)
+	{
+		if ((t.HasMeme() && !t.IsFlagged()) ||
+			(!t.HasMeme() && !t.IsRevealed()))
+			return false;
+	}
+	return true;
+}
+
+bool MemeField::GameIsLost() const
+{
+	return isFucked;
 }
 
 MemeField::Tile & MemeField::TileAt(const Vei2 & gridPos)
