@@ -65,7 +65,7 @@ void Game::UpdateModel()
 void Game::ComposeFrame()
 {
 	field.Draw(gfx);
-	if (field.GameIsWon())
+	if (field.GetState() == MemeField::State::Winrar)
 	{
 		SpriteCodex::DrawWin(field.GetRect().GetCenter(), gfx);
 	}
